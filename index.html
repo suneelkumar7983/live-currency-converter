@@ -101,7 +101,7 @@
     resultDisplay.innerText = 'Fetching live exchange rate...';
 
     try {
-      const response = await fetch(`https://frankfurter.app{targetCurrency}`);
+      const response = await fetch(`https://frankfurter.dev{targetCurrency}`);
       const data = await response.json();
 
       const rate = data.rates[targetCurrency];
