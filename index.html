@@ -1,0 +1,117 @@
+<style>
+  body {
+    font-family: sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+  }
+  .converter-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 350px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  button {
+    width: 100%;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .result-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #eef7f2;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
+  }
+  .error-msg {
+    color: #d9534f;
+    font-size: 14px;
+  }
+</style>
+
+<div class="converter-card">
+  <h2>Live Currency Converter</h2>
+
+  <div class="input-group">
+    <label>Amount in USD ($)</label>
+    <input type="number" id="amount-input" value="10" min="1">
+  </div>
+
+  <div class="input-group">
+    <label>Convert To</label>
+    <select id="currency-select">
+      <option value="INR">Indian Rupee (INR)</option>
+      <option value="EUR">Euro (EUR)</option>
+      <option value="GBP">British Pound (GBP)</option>
+      <option value="JPY">Japanese Yen (JPY)</option>
+    </select>
+  </div>
+
+  <button id="convert-btn">Get Live Rate</button>
+
+  <div id="result-display" class="result-box">
+    Tap button to fetch live rate
+  </div>
+</div>
+
+<script>
+  const convertBtn = document.getElementById('convert-btn');
+  const amountInput = document.getElementById('amount-input');
+  const currencySelect = document.getElementById('currency-select');
+  const resultDisplay = document.getElementById('result-display');
+
+  async function convertCurrency() {
+    const amount = parseFloat(amountInput.value);
+    const targetCurrency = currencySelect.value;
+
+    if (isNaN(amount) || amount <= 0) {
+      resultDisplay.innerHTML = '<span class="error-msg">Please enter a valid positive amount.</span>';
+      return;
+    }
+
+    resultDisplay.innerText = 'Fetching live exchange rate...';
+
+    try {
+      const response = await fetch(`https://frankfurter.app{targetCurrency}`);
+      const data = await response.json();
+
+      const rate = data.rates[targetCurrency];
+      const convertedTotal = (amount * rate).toFixed(2);
+
+      resultDisplay.innerHTML = `$${amount} USD = <br><span style="color:#28a745; font-size:22px;">${convertedTotal} ${targetCurrency}</span>`;
+    } catch (error) {
+      resultDisplay.innerHTML = '<span class="error-msg">Network error. Could not load live rates.</span>';
+    }
+  }
+
+  convertBtn.addEventListener('click', convertCurrency);
+</script>
